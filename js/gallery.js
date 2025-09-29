@@ -64,10 +64,8 @@ const images = [
   },
 ];
 
-// Посилання на список
 const gallery = document.querySelector('.gallery');
 
-// Генерація розмітки
 const galleryMarkup = images
   .map(
     ({ preview, original, description }) => `
@@ -83,21 +81,76 @@ const galleryMarkup = images
     </li>`
   )
   .join('');
-
 gallery.innerHTML = galleryMarkup;
 
-// Делегування подій
-gallery.addEventListener('click', (event) => {
-  event.preventDefault();
+let currentIndex = 0;
+let instance = null;
 
-  const target = event.target;
-  if (target.nodeName !== 'IMG') return;
+function openModal(index) {
+  currentIndex = index;
 
-  const largeImage = target.dataset.source;
-
-  const instance = basicLightbox.create(`
-    <img src="${largeImage}" alt="${target.alt}" width="800" height="600">
-  `);
+  instance = basicLightbox.create(
+    `
+    <div class="lightbox">
+      <button class="close-btn">×</button>
+      <div class="pagination">${currentIndex + 1}/${images.length}</div>
+      <button class="prev-btn">❮</button>
+      <img class="lightbox-image" src="${images[currentIndex].original}" alt="${images[currentIndex].description}">
+      <button class="next-btn">❯</button>
+      <div class="caption">${images[currentIndex].description}</div>
+    </div>
+  `,
+    {
+      onShow: (instance) => {
+        const modalEl = instance.element();
+        modalEl.querySelector('.close-btn').onclick = () => instance.close();
+        modalEl.querySelector('.prev-btn').onclick = showPrev;
+        modalEl.querySelector('.next-btn').onclick = showNext;
+        document.addEventListener('keydown', handleKey);
+      },
+      onClose: () => {
+        document.removeEventListener('keydown', handleKey);
+      },
+    }
+  );
 
   instance.show();
+}
+
+function updateImage() {
+  const modalEl = instance.element();
+  const img = modalEl.querySelector('.lightbox-image');
+  const pagination = modalEl.querySelector('.pagination');
+  const caption = modalEl.querySelector('.caption');
+
+  img.src = images[currentIndex].original;
+  img.alt = images[currentIndex].description;
+  pagination.textContent = `${currentIndex + 1}/${images.length}`;
+  caption.textContent = images[currentIndex].description;
+}
+
+function showPrev() {
+  currentIndex = (currentIndex - 1 + images.length) % images.length;
+  updateImage();
+}
+
+function showNext() {
+  currentIndex = (currentIndex + 1) % images.length;
+  updateImage();
+}
+
+function handleKey(e) {
+  if (e.key === 'Escape') instance.close();
+  if (e.key === 'ArrowLeft') showPrev();
+  if (e.key === 'ArrowRight') showNext();
+}
+
+gallery.addEventListener('click', (e) => {
+  e.preventDefault();
+
+  if (e.target.nodeName !== 'IMG') return;
+
+  const clickedSrc = e.target.dataset.source;
+  const index = images.findIndex((img) => img.original === clickedSrc);
+  openModal(index);
 });
