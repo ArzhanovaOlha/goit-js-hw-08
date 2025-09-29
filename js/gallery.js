@@ -64,8 +64,10 @@ const images = [
   },
 ];
 
+// Посилання на список
 const gallery = document.querySelector('.gallery');
 
+// Генерація розмітки
 const galleryMarkup = images
   .map(
     ({ preview, original, description }) => `
@@ -84,6 +86,7 @@ const galleryMarkup = images
 
 gallery.innerHTML = galleryMarkup;
 
+// Делегування подій
 gallery.addEventListener('click', (event) => {
   event.preventDefault();
 
