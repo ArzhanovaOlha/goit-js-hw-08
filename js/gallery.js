@@ -66,22 +66,29 @@ const images = [
 
 const gallery = document.querySelector('.gallery');
 
-const galleryMarkup = images
-  .map(
-    ({ preview, original, description }) => `
-    <li class="gallery-item">
-      <a class="gallery-link" href="${original}">
-        <img
-          class="gallery-image"
-          src="${preview}"
-          data-source="${original}"
-          alt="${description}"
-        />
-      </a>
-    </li>`
-  )
-  .join('');
-gallery.innerHTML = galleryMarkup;
+// Перевірка чи є галерея в DOM
+if (!gallery) {
+  console.error("Елемент .gallery не знайдено!");
+} else {
+  // Генерація розмітки
+  const galleryMarkup = images
+    .map(
+      ({ preview, original, description }) => `
+      <li class="gallery-item">
+        <a class="gallery-link" href="${original}">
+          <img
+            class="gallery-image"
+            src="${preview}"
+            data-source="${original}"
+            alt="${description}"
+          />
+        </a>
+      </li>`
+    )
+    .join('');
+
+  gallery.innerHTML = galleryMarkup;
+}
 
 let currentIndex = 0;
 let instance = null;
@@ -103,9 +110,13 @@ function openModal(index) {
     {
       onShow: (instance) => {
         const modalEl = instance.element();
-        modalEl.querySelector('.close-btn').onclick = () => instance.close();
-        modalEl.querySelector('.prev-btn').onclick = showPrev;
-        modalEl.querySelector('.next-btn').onclick = showNext;
+
+        modalEl.querySelector('.close-btn')?.addEventListener('click', () =>
+          instance.close()
+        );
+        modalEl.querySelector('.prev-btn')?.addEventListener('click', showPrev);
+        modalEl.querySelector('.next-btn')?.addEventListener('click', showNext);
+
         document.addEventListener('keydown', handleKey);
       },
       onClose: () => {
@@ -118,15 +129,25 @@ function openModal(index) {
 }
 
 function updateImage() {
+  if (!instance) return;
+
   const modalEl = instance.element();
+  if (!modalEl) return;
+
   const img = modalEl.querySelector('.lightbox-image');
   const pagination = modalEl.querySelector('.pagination');
   const caption = modalEl.querySelector('.caption-text');
 
-  img.src = images[currentIndex].original;
-  img.alt = images[currentIndex].description;
-  pagination.textContent = `${currentIndex + 1}/${images.length}`;
-  caption.textContent = images[currentIndex].description;
+  if (img) {
+    img.src = images[currentIndex].original;
+    img.alt = images[currentIndex].description;
+  }
+  if (pagination) {
+    pagination.textContent = `${currentIndex + 1}/${images.length}`;
+  }
+  if (caption) {
+    caption.textContent = images[currentIndex].description;
+  }
 }
 
 function showPrev() {
@@ -140,17 +161,21 @@ function showNext() {
 }
 
 function handleKey(e) {
+  if (!instance) return;
   if (e.key === 'Escape') instance.close();
   if (e.key === 'ArrowLeft') showPrev();
   if (e.key === 'ArrowRight') showNext();
 }
 
-gallery.addEventListener('click', (e) => {
-  e.preventDefault();
-
+gallery?.addEventListener('click', (e) => {
   if (e.target.nodeName !== 'IMG') return;
+
+  e.preventDefault();
 
   const clickedSrc = e.target.dataset.source;
   const index = images.findIndex((img) => img.original === clickedSrc);
-  openModal(index);
+
+  if (index !== -1) {
+    openModal(index);
+  }
 });
