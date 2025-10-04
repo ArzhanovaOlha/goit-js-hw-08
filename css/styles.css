@@ -15,7 +15,7 @@ body {
 .gallery {
   list-style: none;
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  grid-template-columns: auto auto auto;
   gap: 15px;
   padding: 0;
   margin: 0 auto;
@@ -23,7 +23,7 @@ body {
 }
 
 .gallery-item {
-  border-radius: 12px;
+  border-radius: 8px;
   overflow: hidden;
   box-shadow: 0 4px 8px rgba(0,0,0,0.15);
   transition: transform 0.3s ease;
@@ -67,7 +67,8 @@ body {
   background: rgba(0,0,0,0.6);
   color: white;
   border: none;
-  font-size: 32px;
+  font-size: 24px;
+  font-weight: 300;
   cursor: pointer;
   padding: 8px 14px;
   border-radius: 6px;
@@ -109,10 +110,17 @@ body {
 }
 
 .caption {
-  margin-top: 10px;
+  position: absolute;
+  width: 100%;
+  bottom: 0px;
+  left: 0px;
   font-size: 18px;
   color: white;
   background: rgba(0,0,0,0.7);
-  padding: 6px 12px;
-  border-radius: 6px;
+}
+
+.caption-text {
+  text-align: left;
+  padding: 16px 20px;
+  margin: 0;
 }

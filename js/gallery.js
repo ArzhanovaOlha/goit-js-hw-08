@@ -97,7 +97,7 @@ function openModal(index) {
       <button class="prev-btn">❮</button>
       <img class="lightbox-image" src="${images[currentIndex].original}" alt="${images[currentIndex].description}">
       <button class="next-btn">❯</button>
-      <div class="caption">${images[currentIndex].description}</div>
+      <div class="caption"><h4 class="caption-text">${images[currentIndex].description}</h4></div>
     </div>
   `,
     {
@@ -121,7 +121,7 @@ function updateImage() {
   const modalEl = instance.element();
   const img = modalEl.querySelector('.lightbox-image');
   const pagination = modalEl.querySelector('.pagination');
-  const caption = modalEl.querySelector('.caption');
+  const caption = modalEl.querySelector('.caption-text');
 
   img.src = images[currentIndex].original;
   img.alt = images[currentIndex].description;
